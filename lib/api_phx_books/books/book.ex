@@ -39,6 +39,6 @@ defmodule ApiPhxBooks.Books.Book do
 
   def soft_delete_changeset(book) do
     book
-    |> change(deleted_at: DateTime.truncate(DateTime.utc_now(), :second))
+    |> change(deleted_at: DateTime.utc_now() |> DateTime.truncate(:second))
   end
 end

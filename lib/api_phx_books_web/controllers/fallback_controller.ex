@@ -14,10 +14,24 @@ defmodule ApiPhxBooksWeb.FallbackController do
     |> render(:"404")
   end
 
-	def call(conn, {:error, %Ecto.Changeset{}}) do
+  def call(conn, {:error, %Ecto.Changeset{}}) do
     conn
     |> put_status(:unprocessable_entity)
     |> put_view(json: ApiPhxBooksWeb.ErrorJSON)
     |> render(:"422")
-	end
+  end
+
+  def call(conn, {:error, :no_available_copies}) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> put_view(json: ApiPhxBooksWeb.ErrorJSON)
+    |> render(:"422")
+  end
+
+  def call(conn, {:error, :book_already_borrowed}) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> put_view(json: ApiPhxBooksWeb.ErrorJSON)
+    |> render(:"422")
+  end
 end

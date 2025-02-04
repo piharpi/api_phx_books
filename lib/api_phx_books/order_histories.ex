@@ -9,49 +9,43 @@ defmodule ApiPhxBooks.OrderHistories do
   alias ApiPhxBooks.OrderHistories.OrderHistory
   alias ApiPhxBooks.Books.Book
 
+  @spec borrow_book(any(), any(), any()) :: any()
   def borrow_book(borrower_id, book_id, due_date) do
     book = Repo.get!(Book, book_id)
 
-    if book.available_copies > 0 do
-      Repo.transaction(fn ->
-        # Create order history
-        order =
-          %OrderHistory{}
-          |> OrderHistory.changeset(%{
-            borrower_id: borrower_id,
-            book_id: book_id,
-            due_date: due_date,
-            borrowed_date: DateTime.utc_now(),
-            status: "borrowed"
-          })
-          |> Repo.insert!()
+    existing_order =
+      OrderHistory
+      |> where([o], o.book_id == ^book_id and is_nil(o.returned_date) and o.status == :borrowed)
+      |> Repo.one()
 
-        # Decrease available copies
-        book
-        |> Book.copies_changeset(%{available_copies: book.available_copies - 1})
-        |> Repo.update!()
-
-        order
-      end)
+    if existing_order do
+      {:error, :book_already_borrowed}
     else
-      {:error, :no_available_copies}
+      if book.available_copies > 0 do
+        Repo.transaction(fn ->
+          order =
+            %OrderHistory{}
+            |> OrderHistory.changeset(%{
+              borrower_id: borrower_id,
+              book_id: book_id,
+              due_date: due_date,
+              borrowed_date: DateTime.utc_now(),
+              status: "borrowed"
+            })
+            |> Repo.insert!()
+
+          book
+          |> Book.copies_changeset(%{available_copies: book.available_copies - 1})
+          |> Repo.update!()
+
+          order
+        end)
+      else
+        {:error, :no_available_copies}
+      end
     end
   end
 
-  @doc """
-  Gets a single order_history.
-
-  Raises `Ecto.NoResultsError` if the Order history does not exist.
-
-  ## Examples
-
-      iex> get_order_history!(123)
-      %OrderHistory{}
-
-      iex> get_order_history!(456)
-      ** (Ecto.NoResultsError)
-
-  """
   def get_order_history!(id), do: Repo.get!(OrderHistory, id)
 
   def list_order_histories, do: Repo.all(OrderHistory)
@@ -61,7 +55,6 @@ defmodule ApiPhxBooks.OrderHistories do
     returned_date = DateTime.utc_now()
 
     Repo.transaction(fn ->
-      # Update order history
       updated_order =
         order
         |> OrderHistory.changeset(%{
@@ -78,7 +71,6 @@ defmodule ApiPhxBooks.OrderHistories do
         })
         |> Repo.update!()
 
-      # Increase available copies
       book
       |> Book.copies_changeset(%{available_copies: book.available_copies + 1})
       |> Repo.update!()
