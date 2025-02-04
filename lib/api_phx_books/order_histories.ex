@@ -15,7 +15,11 @@ defmodule ApiPhxBooks.OrderHistories do
 
     existing_order =
       OrderHistory
-      |> where([o], o.book_id == ^book_id and is_nil(o.returned_date) and o.status == :borrowed)
+      |> where(
+        [o],
+        o.book_id == ^book_id and o.borrower_id == ^borrower_id and is_nil(o.returned_date) and
+          o.status == :borrowed
+      )
       |> Repo.one()
 
     if existing_order do
@@ -54,28 +58,40 @@ defmodule ApiPhxBooks.OrderHistories do
     book = Repo.get!(Book, order.book_id)
     returned_date = DateTime.utc_now()
 
-    Repo.transaction(fn ->
-      updated_order =
-        order
-        |> OrderHistory.changeset(%{
-          returned_date: returned_date,
-          status:
-            if(
-              Date.after?(
-                returned_date,
-                DateTime.to_date(order.due_date)
-              ),
-              do: "overdue",
-              else: "returned"
-            )
-        })
+    existing_return_order =
+      OrderHistory
+      |> where(
+        [o],
+        o.id == ^order.id and not is_nil(o.returned_date)
+      )
+      |> Repo.one()
+
+    if existing_return_order do
+      {:error, :book_already_returned}
+    else
+      Repo.transaction(fn ->
+        updated_order =
+          order
+          |> OrderHistory.changeset(%{
+            returned_date: returned_date,
+            status:
+              if(
+                DateTime.after?(
+                  returned_date,
+                  order.due_date
+                ),
+                do: "overdue",
+                else: "returned"
+              )
+          })
+          |> Repo.update!()
+
+        book
+        |> Book.copies_changeset(%{available_copies: book.available_copies + 1})
         |> Repo.update!()
 
-      book
-      |> Book.copies_changeset(%{available_copies: book.available_copies + 1})
-      |> Repo.update!()
-
-      updated_order
-    end)
+        updated_order
+      end)
+    end
   end
 end

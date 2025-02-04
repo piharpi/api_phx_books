@@ -34,4 +34,11 @@ defmodule ApiPhxBooksWeb.FallbackController do
     |> put_view(json: ApiPhxBooksWeb.ErrorJSON)
     |> render(:"422")
   end
+
+  def call(conn, {:error, :book_already_returned}) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> put_view(json: ApiPhxBooksWeb.ErrorJSON)
+    |> render(:"422")
+  end
 end
