@@ -28,7 +28,7 @@ defmodule ApiPhxBooks.OrderHistories do
 
         # Decrease available copies
         book
-        |> Book.changeset(%{available_copies: book.available_copies - 1})
+        |> Book.copies_changeset(%{available_copies: book.available_copies - 1})
         |> Repo.update!()
 
         order
@@ -71,7 +71,7 @@ defmodule ApiPhxBooks.OrderHistories do
               Date.after?(
                 returned_date,
                 DateTime.to_date(order.due_date)
-              ) > 7,
+              ),
               do: "overdue",
               else: "returned"
             )
@@ -80,7 +80,7 @@ defmodule ApiPhxBooks.OrderHistories do
 
       # Increase available copies
       book
-      |> Book.changeset(%{available_copies: book.available_copies + 1})
+      |> Book.copies_changeset(%{available_copies: book.available_copies + 1})
       |> Repo.update!()
 
       updated_order

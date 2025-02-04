@@ -18,9 +18,12 @@ defmodule ApiPhxBooks.Books do
 
   """
   def list_books do
-    Repo.all(Book)
+    Book
+    |> where([b], is_nil(b.deleted_at))
+    |> Repo.all()
   end
 
+  @spec get_book!(keyword()) :: any()
   @doc """
   Gets a single book.
 
@@ -35,7 +38,11 @@ defmodule ApiPhxBooks.Books do
       ** (Ecto.NoResultsError)
 
   """
-  def get_book!(id), do: Repo.get!(Book, id)
+  def get_book!(id) do
+    Book
+    |> where([b], is_nil(b.deleted_at))
+    |> Repo.get!(id)
+  end
 
   @doc """
   Creates a book.
@@ -51,7 +58,7 @@ defmodule ApiPhxBooks.Books do
   """
   def create_book(attrs \\ %{}) do
     %Book{}
-    |> Book.changeset(attrs)
+    |> Book.new_changeset(attrs)
     |> Repo.insert()
   end
 
@@ -69,7 +76,7 @@ defmodule ApiPhxBooks.Books do
   """
   def update_book(%Book{} = book, attrs) do
     book
-    |> Book.changeset(attrs)
+    |> Book.update_changeset(attrs)
     |> Repo.update()
   end
 
@@ -86,7 +93,9 @@ defmodule ApiPhxBooks.Books do
 
   """
   def delete_book(%Book{} = book) do
-    Repo.delete(book)
+    book
+    |> Book.soft_delete_changeset()
+    |> Repo.update()
   end
 
   @doc """
@@ -99,6 +108,6 @@ defmodule ApiPhxBooks.Books do
 
   """
   def change_book(%Book{} = book, attrs \\ %{}) do
-    Book.changeset(book, attrs)
+    Book.update_changeset(book, attrs)
   end
 end
