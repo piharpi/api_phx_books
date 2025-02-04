@@ -6,6 +6,7 @@ config :api_phx_books, ApiPhxBooks.Repo,
   password: "password",
   hostname: "localhost",
   database: "api_phx_books_dev",
+	port: 5123,
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10

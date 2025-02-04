@@ -8,10 +8,14 @@ defmodule ApiPhxBooksWeb.Router do
   scope "/api", ApiPhxBooksWeb do
     pipe_through :api
 
-		resources "/books", BookController, except: [:new, :edit]
+    resources "/books", BookController, except: [:new, :edit]
 
-		get "/borrowers", BorrowerController, :index
-		get "/borrowers/:id", BorrowerController, :show
+    get "/borrowers", BorrowerController, :index
+    get "/borrowers/:id", BorrowerController, :show
+
+    get "/orders", OrderHistoryController, :index
+    post "/orders/borrow", OrderHistoryController, :borrow
+    post "/orders/return/:id", OrderHistoryController, :return
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

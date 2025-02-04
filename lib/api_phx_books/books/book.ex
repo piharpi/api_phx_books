@@ -17,5 +17,7 @@ defmodule ApiPhxBooks.Books.Book do
     book
     |> cast(attrs, [:title, :author, :isbn, :total_copies, :available_copies])
     |> validate_required([:title, :author, :isbn, :total_copies, :available_copies])
+    |> unique_constraint(:isbn)
+    |> validate_number(:total_copies, greater_than: 0)
   end
 end

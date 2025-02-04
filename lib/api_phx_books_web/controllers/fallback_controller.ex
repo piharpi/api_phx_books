@@ -13,4 +13,11 @@ defmodule ApiPhxBooksWeb.FallbackController do
     |> put_view(html: ApiPhxBooksWeb.ErrorHTML, json: ApiPhxBooksWeb.ErrorJSON)
     |> render(:"404")
   end
+
+	def call(conn, {:error, %Ecto.Changeset{}}) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> put_view(json: ApiPhxBooksWeb.ErrorJSON)
+    |> render(:"422")
+	end
 end
