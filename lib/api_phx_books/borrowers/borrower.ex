@@ -1,10 +1,12 @@
 defmodule ApiPhxBooks.Borrowers.Borrower do
   use Ecto.Schema
+  alias ApiPhxBooks.OrderHistories.OrderHistory
   import Ecto.Changeset
 
   schema "borrowers" do
     field :name, :string
     field :email, :string
+    has_many(:order_histories, OrderHistory)
 
     timestamps(type: :utc_datetime)
   end

@@ -2,6 +2,8 @@ defmodule ApiPhxBooks.Books.Book do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias ApiPhxBooks.OrderHistories.OrderHistory
+
   schema "books" do
     field :author, :string
     field :title, :string
@@ -9,6 +11,7 @@ defmodule ApiPhxBooks.Books.Book do
     field :total_copies, :integer
     field :available_copies, :integer
     field :deleted_at, :utc_datetime
+    has_many(:order_histories, OrderHistory)
 
     timestamps(type: :utc_datetime)
   end
