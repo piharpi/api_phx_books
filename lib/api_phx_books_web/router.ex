@@ -14,6 +14,7 @@ defmodule ApiPhxBooksWeb.Router do
     get "/borrowers/:id", BorrowerController, :show
 
     get "/orders", OrderHistoryController, :index
+    get "/orders/:id", OrderHistoryController, :show
     post "/orders/borrow", OrderHistoryController, :borrow
     post "/orders/return/:id", OrderHistoryController, :return
   end

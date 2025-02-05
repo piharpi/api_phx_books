@@ -31,4 +31,9 @@ defmodule ApiPhxBooksWeb.OrderHistoryController do
     order_histories = OrderHistories.list_order_histories()
     render(conn, :index, order_histories: order_histories)
   end
+
+  def show(conn, %{"id" => id}) do
+    order = OrderHistories.get_order_history!(id)
+    render(conn, :show, order_history: order)
+  end
 end

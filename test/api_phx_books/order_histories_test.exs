@@ -21,9 +21,16 @@ defmodule ApiPhxBooks.OrderHistoriesTest do
     end
 
     test "create_order_history/1 with valid data creates a order_history" do
-      valid_attrs = %{status: "some status", borrowed_date: ~U[2025-02-03 14:52:00Z], due_data: ~U[2025-02-03 14:52:00Z], returned_date: ~U[2025-02-03 14:52:00Z]}
+      valid_attrs = %{
+        status: "some status",
+        borrowed_date: ~U[2025-02-03 14:52:00Z],
+        due_data: ~U[2025-02-03 14:52:00Z],
+        returned_date: ~U[2025-02-03 14:52:00Z]
+      }
 
-      assert {:ok, %OrderHistory{} = order_history} = OrderHistories.create_order_history(valid_attrs)
+      assert {:ok, %OrderHistory{} = order_history} =
+               OrderHistories.create_order_history(valid_attrs)
+
       assert order_history.status == "some status"
       assert order_history.borrowed_date == ~U[2025-02-03 14:52:00Z]
       assert order_history.due_data == ~U[2025-02-03 14:52:00Z]
@@ -36,9 +43,17 @@ defmodule ApiPhxBooks.OrderHistoriesTest do
 
     test "update_order_history/2 with valid data updates the order_history" do
       order_history = order_history_fixture()
-      update_attrs = %{status: "some updated status", borrowed_date: ~U[2025-02-04 14:52:00Z], due_data: ~U[2025-02-04 14:52:00Z], returned_date: ~U[2025-02-04 14:52:00Z]}
 
-      assert {:ok, %OrderHistory{} = order_history} = OrderHistories.update_order_history(order_history, update_attrs)
+      update_attrs = %{
+        status: "some updated status",
+        borrowed_date: ~U[2025-02-04 14:52:00Z],
+        due_data: ~U[2025-02-04 14:52:00Z],
+        returned_date: ~U[2025-02-04 14:52:00Z]
+      }
+
+      assert {:ok, %OrderHistory{} = order_history} =
+               OrderHistories.update_order_history(order_history, update_attrs)
+
       assert order_history.status == "some updated status"
       assert order_history.borrowed_date == ~U[2025-02-04 14:52:00Z]
       assert order_history.due_data == ~U[2025-02-04 14:52:00Z]
@@ -47,14 +62,20 @@ defmodule ApiPhxBooks.OrderHistoriesTest do
 
     test "update_order_history/2 with invalid data returns error changeset" do
       order_history = order_history_fixture()
-      assert {:error, %Ecto.Changeset{}} = OrderHistories.update_order_history(order_history, @invalid_attrs)
+
+      assert {:error, %Ecto.Changeset{}} =
+               OrderHistories.update_order_history(order_history, @invalid_attrs)
+
       assert order_history == OrderHistories.get_order_history!(order_history.id)
     end
 
     test "delete_order_history/1 deletes the order_history" do
       order_history = order_history_fixture()
       assert {:ok, %OrderHistory{}} = OrderHistories.delete_order_history(order_history)
-      assert_raise Ecto.NoResultsError, fn -> OrderHistories.get_order_history!(order_history.id) end
+
+      assert_raise Ecto.NoResultsError, fn ->
+        OrderHistories.get_order_history!(order_history.id)
+      end
     end
 
     test "change_order_history/1 returns a order_history changeset" do

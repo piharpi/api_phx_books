@@ -25,5 +25,4 @@ Enum.each(borrowers, fn borrower ->
   Repo.insert!(%Borrower{} |> Borrower.changeset(borrower))
 end)
 
-
 IO.puts("Seed borrowers data successfully")

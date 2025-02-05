@@ -7,7 +7,10 @@ defmodule ApiPhxBooks.Borrowers do
 
   alias ApiPhxBooks.Borrowers.Borrower
 
-  def list_borrowers, do: Repo.all(Borrower)
+  def list_borrowers do
+    Repo.all(Borrower)
+    |> Repo.preload(order_histories: [:book])
+  end
 
   def get_borrower!(id) do
     Repo.get!(Borrower, id)

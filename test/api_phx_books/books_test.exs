@@ -8,7 +8,15 @@ defmodule ApiPhxBooks.BooksTest do
 
     import ApiPhxBooks.BooksFixtures
 
-    @invalid_attrs %{author: nil, ntitle: nil, isbn: nil, total_copies: nil, available_copies: nil, created_at: nil, updated_at: nil}
+    @invalid_attrs %{
+      author: nil,
+      ntitle: nil,
+      isbn: nil,
+      total_copies: nil,
+      available_copies: nil,
+      created_at: nil,
+      updated_at: nil
+    }
 
     test "list_books/0 returns all books" do
       book = book_fixture()
@@ -21,7 +29,15 @@ defmodule ApiPhxBooks.BooksTest do
     end
 
     test "create_book/1 with valid data creates a book" do
-      valid_attrs = %{author: "some author", ntitle: "some ntitle", isbn: "some isbn", total_copies: 42, available_copies: 42, created_at: ~U[2025-02-02 03:19:00Z], updated_at: ~U[2025-02-02 03:19:00Z]}
+      valid_attrs = %{
+        author: "some author",
+        ntitle: "some ntitle",
+        isbn: "some isbn",
+        total_copies: 42,
+        available_copies: 42,
+        created_at: ~U[2025-02-02 03:19:00Z],
+        updated_at: ~U[2025-02-02 03:19:00Z]
+      }
 
       assert {:ok, %Book{} = book} = Books.create_book(valid_attrs)
       assert book.author == "some author"
@@ -39,7 +55,16 @@ defmodule ApiPhxBooks.BooksTest do
 
     test "update_book/2 with valid data updates the book" do
       book = book_fixture()
-      update_attrs = %{author: "some updated author", ntitle: "some updated ntitle", isbn: "some updated isbn", total_copies: 43, available_copies: 43, created_at: ~U[2025-02-03 03:19:00Z], updated_at: ~U[2025-02-03 03:19:00Z]}
+
+      update_attrs = %{
+        author: "some updated author",
+        ntitle: "some updated ntitle",
+        isbn: "some updated isbn",
+        total_copies: 43,
+        available_copies: 43,
+        created_at: ~U[2025-02-03 03:19:00Z],
+        updated_at: ~U[2025-02-03 03:19:00Z]
+      }
 
       assert {:ok, %Book{} = book} = Books.update_book(book, update_attrs)
       assert book.author == "some updated author"

@@ -25,67 +25,50 @@ defmodule ApiPhxBooksWeb.OrderHistoryControllerTest do
     end
   end
 
-  defp create_order_history() do
-    order = order_history_fixture()
-    %{order: order}
+  describe "create order_history" do
+    test "order borrowed book", %{conn: conn} do
+      borrower = borrower_fixture()
+      book = book_fixture()
+
+      borrowed = %{
+        "due_date" => DateTime.utc_now() |> DateTime.add(1, :hour),
+        "book_id" => book.id,
+        "borrower_id" => borrower.id
+      }
+
+      conn = post(conn, ~p"/api/orders/borrow", borrowed)
+
+      assert %{"id" => id} = json_response(conn, 201)["data"]
+
+      conn = get(conn, ~p"/api/orders/#{id}")
+
+      assert %{
+               "id" => ^id,
+               "returned_date" => nil,
+               "status" => "borrowed"
+             } = json_response(conn, 200)["data"]
+    end
   end
 
-  # describe "create order_history" do
-  #   test "renders order_history when data is valid", %{conn: conn} do
-  #     conn = post(conn, ~p"/api/order_histories", order_history: @create_attrs)
-  #     assert %{"id" => id} = json_response(conn, 201)["data"]
+  describe "update order_history" do
+    test "order returned book", %{conn: conn} do
+      borrowed = order_history_fixture()
 
-  #     conn = get(conn, ~p"/api/order_histories/#{id}")
+      conn = post(conn, ~p"/api/orders/return/#{borrowed.id}", nil)
 
-  #     assert %{
-  #              "id" => ^id,
-  #              "borrowed_date" => "2025-02-03T14:52:00Z",
-  #              "due_data" => "2025-02-03T14:52:00Z",
-  #              "returned_date" => "2025-02-03T14:52:00Z",
-  #              "status" => "some status"
-  #            } = json_response(conn, 200)["data"]
-  #   end
+      assert %{"id" => id} = json_response(conn, 200)["data"]
 
-  #   test "renders errors when data is invalid", %{conn: conn} do
-  #     conn = post(conn, ~p"/api/order_histories", order_history: @invalid_attrs)
-  #     assert json_response(conn, 422)["errors"] != %{}
-  #   end
-  # end
+      conn = get(conn, ~p"/api/orders/#{id}")
 
-  # describe "update order_history" do
-  #   setup [:create_order_history]
+      %{
+        "status" => status,
+        "returned_date" => returned_date
+      } =
+        json_response(conn, 200)["data"]
 
-  #   test "renders order_history when data is valid", %{conn: conn, order_history: %OrderHistory{id: id} = order_history} do
-  #     conn = put(conn, ~p"/api/order_histories/#{order_history}", order_history: @update_attrs)
-  #     assert %{"id" => ^id} = json_response(conn, 200)["data"]
-
-  #     conn = get(conn, ~p"/api/order_histories/#{id}")
-
-  #     assert %{
-  #              "id" => ^id,
-  #              "borrowed_date" => "2025-02-04T14:52:00Z",
-  #              "due_data" => "2025-02-04T14:52:00Z",
-  #              "returned_date" => "2025-02-04T14:52:00Z",
-  #              "status" => "some updated status"
-  #            } = json_response(conn, 200)["data"]
-  #   end
-
-  #   test "renders errors when data is invalid", %{conn: conn, order_history: order_history} do
-  #     conn = put(conn, ~p"/api/order_histories/#{order_history}", order_history: @invalid_attrs)
-  #     assert json_response(conn, 422)["errors"] != %{}
-  #   end
-  # end
-
-  # describe "delete order_history" do
-  #   setup [:create_order_history]
-
-  #   test "deletes chosen order_history", %{conn: conn, order_history: order_history} do
-  #     conn = delete(conn, ~p"/api/order_histories/#{order_history}")
-  #     assert response(conn, 204)
-
-  #     assert_error_sent 404, fn ->
-  #       get(conn, ~p"/api/order_histories/#{order_history}")
-  #     end
-  #   end
-  # end
+      assert id == borrowed.id
+      assert status == "returned"
+      assert returned_date != nil
+    end
+  end
 end
