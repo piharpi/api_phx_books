@@ -54,6 +54,12 @@ defmodule ApiPhxBooks.OrderHistories do
 
   def list_order_histories, do: Repo.all(OrderHistory)
 
+  def create_order_histories(attrs \\ %{}) do
+    %OrderHistory{}
+    |> OrderHistory.changeset(attrs)
+    |> Repo.insert()
+  end
+
   def return_book(%OrderHistory{} = order) do
     book = Repo.get!(Book, order.book_id)
     returned_date = DateTime.utc_now()

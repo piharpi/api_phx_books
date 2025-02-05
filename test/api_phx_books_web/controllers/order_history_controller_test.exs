@@ -3,32 +3,32 @@ defmodule ApiPhxBooksWeb.OrderHistoryControllerTest do
 
   import ApiPhxBooks.OrderHistoriesFixtures
 
-  alias ApiPhxBooks.OrderHistories.OrderHistory
+  setup %{conn: conn} do
+    {:ok, conn: put_req_header(conn, "accept", "application/json")}
+  end
 
-  # @create_attrs %{
-  #   status: "some status",
-  #   borrowed_date: ~U[2025-02-03 14:52:00Z],
-  #   due_data: ~U[2025-02-03 14:52:00Z],
-  #   returned_date: ~U[2025-02-03 14:52:00Z]
-  # }
-  # @update_attrs %{
-  #   status: "some updated status",
-  #   borrowed_date: ~U[2025-02-04 14:52:00Z],
-  #   due_data: ~U[2025-02-04 14:52:00Z],
-  #   returned_date: ~U[2025-02-04 14:52:00Z]
-  # }
-  # @invalid_attrs %{status: nil, borrowed_date: nil, due_data: nil, returned_date: nil}
+  describe "index" do
+    test "lists all order_histories", %{conn: conn} do
+      order = order_history_fixture()
 
-  # setup %{conn: conn} do
-  #   {:ok, conn: put_req_header(conn, "accept", "application/json")}
-  # end
+      conn = get(conn, ~p"/api/orders")
 
-  # describe "index" do
-  #   test "lists all order_histories", %{conn: conn} do
-  #     conn = get(conn, ~p"/api/order_histories")
-  #     assert json_response(conn, 200)["data"] == []
-  #   end
-  # end
+      assert [
+               %{
+                 "id" => order.id,
+                 "status" => Atom.to_string(order.status),
+                 "due_date" => DateTime.to_iso8601(order.due_date),
+                 "returned_date" => order.returned_date,
+                 "borrowed_date" => DateTime.to_iso8601(order.borrowed_date)
+               }
+             ] == json_response(conn, 200)["data"]
+    end
+  end
+
+  defp create_order_history() do
+    order = order_history_fixture()
+    %{order: order}
+  end
 
   # describe "create order_history" do
   #   test "renders order_history when data is valid", %{conn: conn} do
@@ -87,10 +87,5 @@ defmodule ApiPhxBooksWeb.OrderHistoryControllerTest do
   #       get(conn, ~p"/api/order_histories/#{order_history}")
   #     end
   #   end
-  # end
-
-  # defp create_order_history(_) do
-  #   order_history = order_history_fixture()
-  #   %{order_history: order_history}
   # end
 end

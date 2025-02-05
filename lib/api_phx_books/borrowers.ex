@@ -13,4 +13,10 @@ defmodule ApiPhxBooks.Borrowers do
     Repo.get!(Borrower, id)
     |> Repo.preload(order_histories: [:book])
   end
+
+  def create_borrower(attrs \\ %{}) do
+    %Borrower{}
+    |> Borrower.changeset(attrs)
+    |> Repo.insert()
+  end
 end
