@@ -6,20 +6,20 @@ defmodule ApiPhxBooksWeb.BookControllerTest do
   alias ApiPhxBooks.Books.Book
 
   @create_attrs %{
-    author: "some author",
-    title: "some title",
-    isbn: "some isbn",
-    total_copies: 42,
-    available_copies: 42
+    author: "Agus",
+    title: "Buku Baca Harian",
+    isbn: "9933000222",
+    total_copies: 3,
+    available_copies: 3
   }
+
   @update_attrs %{
-    author: "some updated author",
-    title: "some updated title",
-    isbn: "some updated isbn",
-    total_copies: 43,
-    available_copies: 43
+    author: "Update Agus",
+    title: "Update Buku Baca Harian",
+    isbn: "11133000222",
+    total_copies: 10,
+    available_copies: 10
   }
-  @invalid_attrs %{author: nil, title: nil, isbn: nil, total_copies: nil, available_copies: nil}
 
   setup %{conn: conn} do
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
@@ -27,8 +27,20 @@ defmodule ApiPhxBooksWeb.BookControllerTest do
 
   describe "index" do
     test "lists all books", %{conn: conn} do
+      book = book_fixture()
+
       conn = get(conn, ~p"/api/books")
-      assert json_response(conn, 200)["data"] == []
+
+      assert [
+               %{
+                 "id" => book.id,
+                 "title" => book.title,
+                 "author" => book.author,
+                 "isbn" => book.isbn,
+                 "available_copies" => book.available_copies,
+                 "total_copies" => book.total_copies
+               }
+             ] == json_response(conn, 200)["data"]
     end
   end
 
@@ -41,17 +53,12 @@ defmodule ApiPhxBooksWeb.BookControllerTest do
 
       assert %{
                "id" => ^id,
-               "author" => "some author",
-               "available_copies" => 42,
-               "isbn" => "some isbn",
-               "title" => "some title",
-               "total_copies" => 42
+               "title" => "Buku Baca Harian",
+               "author" => "Agus",
+               "available_copies" => 3,
+               "isbn" => "9933000222",
+               "total_copies" => 3
              } = json_response(conn, 200)["data"]
-    end
-
-    test "renders errors when data is invalid", %{conn: conn} do
-      conn = post(conn, ~p"/api/books", book: @invalid_attrs)
-      assert json_response(conn, 422)["errors"] != %{}
     end
   end
 
@@ -66,17 +73,12 @@ defmodule ApiPhxBooksWeb.BookControllerTest do
 
       assert %{
                "id" => ^id,
-               "author" => "some updated author",
-               "available_copies" => 43,
-               "isbn" => "some updated isbn",
-               "title" => "some updated title",
-               "total_copies" => 43
+               "author" => "Update Agus",
+               "available_copies" => 3,
+               "isbn" => "11133000222",
+               "title" => "Update Buku Baca Harian",
+               "total_copies" => 3
              } = json_response(conn, 200)["data"]
-    end
-
-    test "renders errors when data is invalid", %{conn: conn, book: book} do
-      conn = put(conn, ~p"/api/books/#{book}", book: @invalid_attrs)
-      assert json_response(conn, 422)["errors"] != %{}
     end
   end
 

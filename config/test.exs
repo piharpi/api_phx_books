@@ -7,8 +7,9 @@ import Config
 # Run `mix help test` for more information.
 config :api_phx_books, ApiPhxBooks.Repo,
   username: "postgres",
-  password: "postgres",
+  password: "password",
   hostname: "localhost",
+  port: 5123,
   database: "api_phx_books_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: System.schedulers_online() * 2

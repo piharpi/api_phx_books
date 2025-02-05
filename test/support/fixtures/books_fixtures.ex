@@ -1,25 +1,20 @@
 defmodule ApiPhxBooks.BooksFixtures do
-  @moduledoc """
-  This module defines test helpers for creating
-  entities via the `ApiPhxBooks.Books` context.
-  """
+  alias ApiPhxBooks.Books
 
-  @doc """
-  Generate a book.
-  """
+  @valid_attrs %{
+    title: "Buku Cerita Agus",
+    author: "Agus",
+    isbn: "9780743273565",
+    available_copies: 3,
+    total_copies: 3
+  }
+
+  @spec book_fixture(any()) :: any()
   def book_fixture(attrs \\ %{}) do
     {:ok, book} =
       attrs
-      |> Enum.into(%{
-        author: "some author",
-        available_copies: 42,
-        created_at: ~U[2025-02-02 03:19:00Z],
-        isbn: "some isbn",
-        ntitle: "some ntitle",
-        total_copies: 42,
-        updated_at: ~U[2025-02-02 03:19:00Z]
-      })
-      |> ApiPhxBooks.Books.create_book()
+      |> Enum.into(@valid_attrs)
+      |> Books.create_book()
 
     book
   end
