@@ -12,6 +12,8 @@ defmodule ApiPhxBooks.Borrowers do
     |> Repo.preload(order_histories: [:book])
   end
 
+  @spec get_borrower!(any()) ::
+          nil | [%{optional(atom()) => any()}] | %{optional(atom()) => any()}
   def get_borrower!(id) do
     Repo.get!(Borrower, id)
     |> Repo.preload(order_histories: [:book])
